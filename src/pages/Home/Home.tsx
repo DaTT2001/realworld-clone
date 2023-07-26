@@ -2,16 +2,17 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getAllTagApi, getArticleByPage, getArticleByTag } from "../../shared/api/api";
 import Pagination from "../../components/Pagination/Pagination";
-import { IArticlePreview } from "../../shared/interfaces";
+import { IArticle } from "../../shared/interfaces";
 import ArticlePreview from "../../components/ArticlePreview/ArticlePreview";
 const Home = () => {
     const [allTag, setAllTag] = useState([]);
     const [tagLoading, setTagLoading] = useState(false);
     const [articleLoading, setArticleLoading] = useState(false);
     const [page, setPage] = useState(1);
-    const [articles, setArticles] = useState<IArticlePreview[]>([]);
+    const [articles, setArticles] = useState<IArticle[]>([]);
     const [articleCount, setArticleCount] = useState(0)
     const [tagFilter, setTagFilter] = useState<{isFilter: boolean, tag: string}>({isFilter: false, tag :''});
+
     useEffect(() => {
         async function fetchData(): Promise<void> {
             try {
@@ -19,7 +20,9 @@ const Home = () => {
                 const response = await getAllTagApi();
                 setAllTag(response.tags);
                 setTagLoading(false);
-            } catch { }
+            } catch {
+                throw new Error('err')
+            }
         }
         void fetchData();
     }, []);
@@ -51,13 +54,21 @@ const Home = () => {
             void fetchDataTag();
         }
     }, [page, tagFilter]);
+
     const handlePagination = (page: number): void => {
         setPage(page);
     };
+
     const handleFilterByTag = (tag: string): void => {
         setTagFilter({isFilter: true, tag: tag});
         setPage(1);
-    }
+    };
+
+    const handleGlobalFeed = (): void => {
+        setTagFilter({isFilter: false, tag:''});
+        setPage(1);
+    };
+
     return (
         <div className="home-page">
             <div className="banner">
@@ -72,7 +83,7 @@ const Home = () => {
                         <div className="feed-toggle">
                             <ul className="nav nav-pills outline-active">
                                 <li className="nav-item">
-                                    <Link onClick={() => {setTagFilter({isFilter: false, tag:''}); setPage(1)}} className={`nav-link ${tagFilter.isFilter ? ''  : 'active'}`}
+                                    <Link onClick={() => handleGlobalFeed()} className={`nav-link ${tagFilter.isFilter ? ''  : 'active'}`}
                                     to="">
                                         Global Feed
                                     </Link>
@@ -89,11 +100,13 @@ const Home = () => {
                             </ul>
                         </div>
                         {
-                        articleLoading ? (<p style={{textAlign: "left"}}>Loading Articles...</p>) :
+                        articleLoading ? (<div className="article-preview">Loading Articles...</div>) :
                         
                         (articles.map((article, index) => {
                             return (
-                                <ArticlePreview article={article}/>
+                                <div key={index}>
+                                    <ArticlePreview article={article}/>
+                                </div>
                             );
                         }))
                         }

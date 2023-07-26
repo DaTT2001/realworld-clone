@@ -1,28 +1,30 @@
 import React from "react";
-import { IArticlePreview } from "../../shared/interfaces";
+import { IArticle } from "../../shared/interfaces";
 import { Link } from "react-router-dom";
+import { formatTime } from "../../shared/utils";
 interface ArticlePreviewProps {
-  article: IArticlePreview;
+  article: IArticle;
 }
 const ArticlePreview = ({ article }: ArticlePreviewProps) => {
+
   return (
     <div className="article-preview">
       <div className="article-meta">
-        <Link to="/profile/eric-simons">
+        <Link to={`/profiles/${article.author.username}`}>
           <img src={article.author.image} />
         </Link>
         <div className="info">
-          <Link to="/profile/eric-simons" className="author">
+          <Link to={`/profiles/${article.author.username}`} className="author">
             {article.author.username}
           </Link>
-          <span className="date">January 20th</span>
+          <span className="date">{formatTime(article.createdAt)}</span>
         </div>
         <button className="btn btn-outline-primary btn-sm pull-xs-right">
           <i className="ion-heart"></i> {article.favoritesCount}
         </button>
       </div>
-      <a
-        href="/article/how-to-build-webapps-that-scale"
+      <Link
+        to={`/articles/${article.slug}`}
         className="preview-link"
       >
         <h1>{article.title}</h1>
@@ -37,7 +39,7 @@ const ArticlePreview = ({ article }: ArticlePreviewProps) => {
             );
           })}
         </ul>
-      </a>
+      </Link>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-export interface IArticlePreview {
+export interface IArticle {
     slug: string;
     title: string;
     description: string;
@@ -10,7 +10,7 @@ export interface IArticlePreview {
     favoritesCount: number;
     author: Author;
 }
-interface Author {
+export interface Author {
     username: string;
     bio: string | null;
     image: string;
