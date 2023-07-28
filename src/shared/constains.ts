@@ -1,4 +1,4 @@
-import { Author, IArticle } from "./interfaces";
+import { Author, IArticle, IState } from "./interfaces";
 
 export const ARTICLE_DEFAULT: IArticle = {
     slug: '',
@@ -22,4 +22,14 @@ export const AUTHOR_DEFAULT: Author = {
     bio: null,
     image: '',
     following: false,
+}
+export const DEFAULT_STATE: IState = {
+    user: {
+        username: '',
+        bio: null,
+        image: '',
+        password: '',
+        email: '',
+    },
+    isLogged: false
 }

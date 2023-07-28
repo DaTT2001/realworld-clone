@@ -9,7 +9,6 @@ export const getAccessToken = () => {
     if (accessToken) {
       return accessToken;
     } else {
-      return null;
+      return undefined;
     }
-  }
-  
+}

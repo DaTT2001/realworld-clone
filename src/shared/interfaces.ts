@@ -16,3 +16,26 @@ export interface Author {
     image: string;
     following: boolean;
 }
+export interface User {
+    username: string;
+    bio: string | null;
+    image: string;
+    email: string;
+    password: string
+}
+export interface IState {
+    user: User
+    isLogged: boolean
+}
+export interface IComment {
+    author: {
+        bio: null | string
+        following: boolean
+        image: string
+        username: string
+    }
+    body: string
+    createdAt: string
+    id: number
+    updateAt: string
+}
