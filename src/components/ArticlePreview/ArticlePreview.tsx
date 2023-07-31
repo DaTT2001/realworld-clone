@@ -10,18 +10,18 @@ interface ArticlePreviewProps {
   article: IArticle;
 }
 const ArticlePreview = ({ article }: ArticlePreviewProps) => {
-  const [currenArticle, setCurrentArticle] = useState<IArticle>(article)
+  const [currentArticle, setCurrentArticle] = useState<IArticle>(article)
   const [isDisabled, setIsDisable] = useState(false)
   const navigateTo = useNavigate()
   const { state } = useRealWorld()
   const handleFavorite = async (e : React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    if(state.isLogged && !currenArticle.favorited) {
+    if(state.isLogged && !currentArticle.favorited) {
       setIsDisable(true)
       const res = await favoriteArticle(article.slug)
       setCurrentArticle(res.article)
       setIsDisable(false)
-    } else if (state.isLogged && currenArticle.favorited) {
+    } else if (state.isLogged && currentArticle.favorited) {
       setIsDisable(true)
       const res = await unFavoriteArticle(article.slug)
       setCurrentArticle(res.article)
@@ -34,28 +34,28 @@ const ArticlePreview = ({ article }: ArticlePreviewProps) => {
   return (
     <div className="article-preview">
       <div className="article-meta">
-        <Link to={`/profiles/${currenArticle.author.username}`}>
-          <img src={currenArticle.author.image} />
+        <Link to={`/profiles/${currentArticle.author.username}`}>
+          <img src={currentArticle.author.image} />
         </Link>
         <div className="info">
-          <Link to={`/profiles/${currenArticle.author.username}`} className="author">
-            {currenArticle.author.username}
+          <Link to={`/profiles/${currentArticle.author.username}`} className="author">
+            {currentArticle.author.username}
           </Link>
-          <span className="date">{formatTime(currenArticle.createdAt)}</span>
+          <span className="date">{formatTime(currentArticle.createdAt)}</span>
         </div>
-        <button disabled={isDisabled} onClick={handleFavorite} className={`btn btn-sm pull-xs-right ${currenArticle.favorited ? 'btn-primary': 'btn-outline-primary'} `}>
-          <i className="ion-heart"></i> {currenArticle.favoritesCount}
+        <button disabled={isDisabled} onClick={handleFavorite} className={`btn btn-sm pull-xs-right ${currentArticle.favorited ? 'btn-primary': 'btn-outline-primary'} `}>
+          <i className="ion-heart"></i> {currentArticle.favoritesCount}
         </button>
       </div>
       <Link
-        to={`/articles/${currenArticle.slug}`}
+        to={`/articles/${currentArticle.slug}`}
         className="preview-link"
       >
-        <h1>{currenArticle.title}</h1>
-        <p>{currenArticle.description}</p>
+        <h1>{currentArticle.title}</h1>
+        <p>{currentArticle.description}</p>
         <span>Read more...</span>
         <ul className="tag-list">
-          {currenArticle.tagList.map((tag, index) => {
+          {currentArticle.tagList.map((tag, index) => {
             return (
               <li key={index} className="tag-default tag-pill tag-outline">
                 {tag}

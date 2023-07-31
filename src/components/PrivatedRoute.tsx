@@ -8,7 +8,7 @@ interface PrivateRouteProps {
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ element: Element, isAuthenticated, ...rest }) => {
-  if (isAuthenticated) {
+  if (!isAuthenticated) {
     return <Navigate to="/" />;
   }
 

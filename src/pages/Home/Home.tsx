@@ -5,6 +5,7 @@ import {
   getArticleByPage,
   getArticleByTag,
   getArticlesByAuthor,
+  getFeedArticles,
 } from "../../shared/api/api";
 import Pagination from "../../components/Pagination/Pagination";
 import { IArticle } from "../../shared/interfaces";
@@ -41,7 +42,7 @@ const Home = () => {
   useEffect(() => {
     async function fetchDataFeed(): Promise<void> {
           setArticleLoading(true);
-          const response = await getArticlesByAuthor(state.user.username, page);
+          const response = await getFeedArticles(state.user.username, page);
           setArticles(response.articles);
           setArticleCount(response.articlesCount);
           setArticleLoading(false);
@@ -94,7 +95,6 @@ const Home = () => {
     setPage(1);
     setNav(true);
   };
-
   return (
     <div className="home-page">
       <div className="banner">

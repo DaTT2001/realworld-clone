@@ -28,6 +28,11 @@ export async function getArticlesByAuthor(author: string, page: number): Promise
     const response = await axiosClient.get('articles', { params })
     return response.data;
 }
+export async function getFeedArticles(author: string, page: number): Promise<{articles: IArticle[], articlesCount: number}> {
+    const params = {limit: 10, offset: ( page - 1) * 10};
+    const response = await axiosClient.get('articles/feed', { params })
+    return response.data;
+}
 export async function getFavoritedArticlesByAuthor(author: string, page: number): Promise<{articles: IArticle[], articlesCount: number}> {
     const params = {limit : 10, favorited: author, offset: ( page - 1) * 10};
     const response = await axiosClient.get('articles', { params })
@@ -96,3 +101,44 @@ export async function deleteComment(slug: string, id: number): Promise<any> {
     const response = await axiosClient.delete(`${slug}/comments/${id}`)
     return response.data;
 }
+export async function postNewArticle(title: string, description: string, body: string, tagList: string[]): Promise<any> {
+    const req = {
+        article : {
+            title : title,
+            description : description,
+            body : body,
+            tagList : tagList
+        }
+    }
+    const response = await axiosClient.post('articles', req)
+    return response.data
+}
+export async function editArticle(title: string, description: string, body: string, tagList: string[], slug: string): Promise<any> {
+    const req = {
+        article : {
+            title : title,
+            description : description,
+            body : body,
+            tagList : tagList
+        }
+    }
+    const response = await axiosClient.put(`articles/${slug}`, req)
+    return response.data
+}
+export async function deleteArticle(slug: string): Promise<any> {
+    const response = await axiosClient.delete(`articles/${slug}`)
+    return response.data
+}
+export async function followProfile(username: string): Promise<any> {
+    const response = await axiosClient.post(`profiles/${username}/follow`)
+    return response.data
+}
+export async function unFollowProfile(username: string): Promise<any> {
+    const response = await axiosClient.delete(`profiles/${username}/follow`)
+    return response.data
+}
+// export async function getProfiles(username: string): Promise<any> {
+
+//     const response = await axiosClient.get(`profiles/celeb_${username}`)
+//     return response.data
+// }

@@ -23,7 +23,7 @@ const Header = () => {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className={`nav-link ${currentPath === "/editor" ? "active" : ""}`} to="/editor">
+                <Link className={`nav-link ${currentPath === "/editor" ? "active" : ""}`} to="/editor/create">
                   {" "}
                   <i className="ion-compose"></i>&nbsp;New Article{" "}
                 </Link>

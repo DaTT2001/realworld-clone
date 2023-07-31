@@ -3,9 +3,11 @@ import { useLocation } from "react-router-dom";
 import { Author, IArticle } from "../../shared/interfaces";
 import { AUTHOR_DEFAULT } from "../../shared/constains";
 import {
+  followProfile,
   getArticlesByAuthor,
   getFavoritedArticlesByAuthor,
   getProfile,
+  unFollowProfile,
 } from "../../shared/api/api";
 import { Link } from "react-router-dom";
 import ArticlePreview from "../../components/ArticlePreview/ArticlePreview";
@@ -57,7 +59,6 @@ const Profiles = () => {
           author.username,
           page
         );
-        console.log(response);
         setArticles(response.articles);
         setArticleCount(response.articlesCount);
         setLoading(false);
@@ -89,9 +90,21 @@ const Profiles = () => {
     if(state.user.username === author.username) {
       navigateTo('/setting');
     } else {
-      // follow
+      
     }
   }
+  const handleFollow = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    if (state.isLogged && !author.following) {
+      const res = await followProfile(author.username);
+      setAuthor(res.profile)
+    } else if (state.isLogged && author.following) {
+      const res = await unFollowProfile(author.username);
+      setAuthor(res.profile)
+    } else {
+      navigateTo("/login");
+    }
+  };
   return (
     <div className="profile-page">
       <div className="user-info">
@@ -106,12 +119,25 @@ const Profiles = () => {
                   <i className="ion-gear-a"></i>
                   &nbsp; Edit Profile Settings
                 </button>
-              ) : (
-                <button className="btn btn-sm btn-outline-secondary action-btn">
-                  <i className="ion-plus-round"></i>
-                  &nbsp; Follow {author.username}
-                </button>
-              )}
+              ) :
+                author.following ? (
+                  <>
+                    <button onClick={handleFollow} className="btn btn-sm btn-secondary action-btn">
+                      <i className="ion-plus-round"></i>
+                      &nbsp; Unfollow {author.username}
+                    </button>
+                    &nbsp;&nbsp;
+                  </>
+                ) : (
+                  <>
+                    <button onClick={handleFollow} className="btn btn-sm btn-outline-secondary action-btn">
+                      <i className="ion-plus-round"></i>
+                      &nbsp; Follow {author.username}
+                    </button>
+                    &nbsp;&nbsp;
+                  </>
+                )
+              }
             </div>
           </div>
         </div>

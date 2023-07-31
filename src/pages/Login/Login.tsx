@@ -12,11 +12,14 @@ interface FormData  {
 
 const Login = () => {
   const navigateTo = useNavigate();
-
+  const {state} = useRealWorld();
   const [formData, setFormData] = useState<FormData>({
     email: '',
     password: ''
   });
+  if(state.isLogged) {
+    navigateTo('/')
+  }
   const [isDisabled, setIsDisable] = useState(false);
   const { dispatch } = useRealWorld();
   const [isError, setIsError] = useState(false);
