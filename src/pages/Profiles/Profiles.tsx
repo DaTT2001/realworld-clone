@@ -9,11 +9,10 @@ import {
   getProfile,
   unFollowProfile,
 } from "../../shared/api/api";
-import { Link } from "react-router-dom";
-import ArticlePreview from "../../components/ArticlePreview/ArticlePreview";
 import Pagination from "../../components/Pagination/Pagination";
 import { useRealWorld } from "../../DataContext/Provider";
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
+import ArticleContainer from "../../components/ArticleContainer/ArticleContainer";
 
 const Profiles = () => {
   const { state } = useRealWorld();
@@ -22,18 +21,22 @@ const Profiles = () => {
   const currentPath = location.pathname;
   const [author, setAuthor] = useState<Author>(AUTHOR_DEFAULT);
   const [articles, setArticles] = useState<IArticle[]>([]);
-  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [articleCount, setArticleCount] = useState(0);
-  const [nav, setNav] = useState("");
+  const [articleLoading, setArticleLoading] = useState(false);
+  const [filter, setFilter] = useState<{
+    filter: string;
+    isFilterByTag: boolean;
+    tag: string;
+  }>({ filter: "My Articles", isFilterByTag: false, tag: "" });
 
   useEffect(() => {
     async function fetchData(): Promise<void> {
       try {
-        setLoading(true);
+        setArticleLoading(true);
         const response = await getProfile(currentPath);
         setAuthor(response.profile);
-        setLoading(false);
+        setArticleLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -43,64 +46,45 @@ const Profiles = () => {
 
   useEffect(() => {
     async function fetchData(): Promise<void> {
-      if (author.username !== "") {
-        setLoading(true);
-        const response = await getArticlesByAuthor(author.username, page);
+      try {
+        setArticleLoading(true);
+        let response: { articles: IArticle[]; articlesCount: number } = {
+          articles: [],
+          articlesCount: 0,
+        };
+        if (filter.filter === "My Articles" && author.username !== "") {
+          response = await getArticlesByAuthor(author.username, page);
+        } else if (
+          filter.filter === "Favorited Articles" &&
+          author.username !== ""
+        ) {
+          response = await getFavoritedArticlesByAuthor(author.username, page);
+        }
         setArticles(response.articles);
         setArticleCount(response.articlesCount);
-        setLoading(false);
+        setArticleLoading(false);
+      } catch (err) {
+        console.log(err);
       }
     }
+    fetchData();
+  }, [page, filter, author.username]);
 
-    async function fetchDataFavorited(): Promise<void> {
-      if (author.username !== "") {
-        setLoading(true);
-        const response = await getFavoritedArticlesByAuthor(
-          author.username,
-          page
-        );
-        setArticles(response.articles);
-        setArticleCount(response.articlesCount);
-        setLoading(false);
-      }
-    }
-
-    if (nav === "") {
-      void fetchData();
-    } else {
-      void fetchDataFavorited();
-    }
-  }, [author.username, page, nav]);
-
-  const handlePagination = (page: number): void => {
-    setPage(page);
-  };
-
-  const handleArticleTab = (): void => {
-    setPage(1);
-    setNav("");
-  };
-
-  const handleFavouritedTab = (): void => {
-    setPage(1);
-    setNav(author.username);
-  };
   const handleProfile = (e: React.MouseEvent<HTMLButtonElement>): void => {
     e.preventDefault();
-    if(state.user.username === author.username) {
-      navigateTo('/setting');
+    if (state.user.username === author.username) {
+      navigateTo("/setting");
     } else {
-      
     }
-  }
+  };
   const handleFollow = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (state.isLogged && !author.following) {
       const res = await followProfile(author.username);
-      setAuthor(res.profile)
+      setAuthor(res.profile);
     } else if (state.isLogged && author.following) {
       const res = await unFollowProfile(author.username);
-      setAuthor(res.profile)
+      setAuthor(res.profile);
     } else {
       navigateTo("/login");
     }
@@ -115,29 +99,36 @@ const Profiles = () => {
               <h4>{author.username}</h4>
               <p>{author.bio}</p>
               {state.user.username === author.username ? (
-                <button onClick={handleProfile} className="btn btn-sm btn-outline-secondary action-btn">
+                <button
+                  onClick={handleProfile}
+                  className="btn btn-sm btn-outline-secondary action-btn"
+                >
                   <i className="ion-gear-a"></i>
                   &nbsp; Edit Profile Settings
                 </button>
-              ) :
-                author.following ? (
-                  <>
-                    <button onClick={handleFollow} className="btn btn-sm btn-secondary action-btn">
-                      <i className="ion-plus-round"></i>
-                      &nbsp; Unfollow {author.username}
-                    </button>
-                    &nbsp;&nbsp;
-                  </>
-                ) : (
-                  <>
-                    <button onClick={handleFollow} className="btn btn-sm btn-outline-secondary action-btn">
-                      <i className="ion-plus-round"></i>
-                      &nbsp; Follow {author.username}
-                    </button>
-                    &nbsp;&nbsp;
-                  </>
-                )
-              }
+              ) : author.following ? (
+                <>
+                  <button
+                    onClick={handleFollow}
+                    className="btn btn-sm btn-secondary action-btn"
+                  >
+                    <i className="ion-plus-round"></i>
+                    &nbsp; Unfollow {author.username}
+                  </button>
+                  &nbsp;&nbsp;
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={handleFollow}
+                    className="btn btn-sm btn-outline-secondary action-btn"
+                  >
+                    <i className="ion-plus-round"></i>
+                    &nbsp; Follow {author.username}
+                  </button>
+                  &nbsp;&nbsp;
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -146,49 +137,12 @@ const Profiles = () => {
       <div className="container">
         <div className="row">
           <div className="col-xs-12 col-md-10 offset-md-1">
-            <div className="articles-toggle">
-              <ul className="nav nav-pills outline-active">
-                <li className="nav-item">
-                  <Link
-                    onClick={() => handleArticleTab()}
-                    className={`nav-link ${nav !== "" ? "" : "active"}`}
-                    to=""
-                  >
-                    My Articles
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link
-                    onClick={() => handleFavouritedTab()}
-                    className={`nav-link ${nav === "" ? "" : "active"}`}
-                    to=""
-                  >
-                    Favorited Articles
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            {loading ? (
-              <div className="article-preview">Loading Articles...</div>
-            ) : articleCount === 0 ? (
-              <div className="article-preview">
-                No articles are here... yet.
-              </div>
-            ) : (
-              articles.map((article, index) => {
-                return (
-                  <div key={index}>
-                    <ArticlePreview article={article} />
-                  </div>
-                );
-              })
-            )}
-
-            {!loading && (
+            <ArticleContainer type="articles" articleCount={articleCount} articles={articles} isLogged = {state.isLogged} setFilter={setFilter} setPage={setPage} filter={filter} nav={['My Articles', 'Favorited Articles']} articleLoading = {articleLoading}/>
+            {!articleLoading && (
               <Pagination
                 page={page}
                 articlesCount={articleCount}
-                handlePagination={handlePagination}
+                setPage={setPage}
               />
             )}
           </div>

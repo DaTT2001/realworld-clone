@@ -13,7 +13,6 @@ const ArticleEditor = () => {
   const [isError, setIsError] = useState(false);
   const [tag, setTag] = useState("");
   const [disabled, setDisabled] = useState(false)
-  
   useEffect(() => {
     async function fetchData(): Promise<void> {
       const response = await getArticleDetail(`articles/${articleName}`);
@@ -24,7 +23,7 @@ const ArticleEditor = () => {
     } else {
       setArticle(ARTICLE_DEFAULT);
     }
-  }, [currentPath]);
+  }, [articleName]);
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {

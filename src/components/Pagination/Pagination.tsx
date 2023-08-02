@@ -1,15 +1,15 @@
 import React from "react";
 
-type PaginationProps = {
+interface PaginationProps  {
   page: number;
   articlesCount: number;
-  handlePagination: (page: number) => void;
+  setPage: (page: number) => void;
 };
 
 export default function Pagination({
   page,
   articlesCount,
-  handlePagination,
+  setPage
 }: PaginationProps) {
   const pageNumbers = [];
 
@@ -20,7 +20,9 @@ export default function Pagination({
   if (articlesCount <= 10) {
     return null;
   }
-
+  const handlePagination = (page: number): void => {
+    setPage(page);
+  };
   return (
     <nav>
       <div className="pagination">
