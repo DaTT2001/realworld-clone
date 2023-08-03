@@ -1,8 +1,8 @@
+/* eslint-disable jsx-a11y/alt-text */
 import React from "react";
 import { Link } from "react-router-dom";
 import { IComment, User } from "../../shared/interfaces";
 import { formatTime } from "../../shared/utils";
-import { deleteComment } from "../../shared/api/api";
 interface CommentCardProps {
     comment: IComment
     handleDeleteComment : (id: number) => void

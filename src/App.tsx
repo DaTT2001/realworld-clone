@@ -42,8 +42,6 @@ function App() {
             <Route path="/articles/:slug" element={<ArticleDetail />} />
             <Route path="/profiles/:username" element={<Profiles />} />
             <Route path='*' element={<Home />} />
-            {/* <Route path="/editor/:article" element={<ArticleEditor />} /> */}
-            {/* <Route path="/setting" element={<Setting />} /> */}
           </Route>
         </Routes>
       </BrowserRouter>
